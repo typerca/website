@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TypeRCA: crash tests for AI incident agents</title>
-<meta name="description" content="Know how your AI incident agent behaves in an outage, before the outage. Controlled failures with known causes, scored on evidence, not just answers.">
+<title>TypeRCA: game days for AI incident agents</title>
+<meta name="description" content="Game days for AI incident agents. Test how they investigate, decide, and act, before a real outage does. Controlled failures with known causes, scored on evidence, not just answers.">
 <link rel="canonical" href="https://typerca.io/">
 <meta property="og:url" content="https://typerca.io/">
-<meta property="og:title" content="TypeRCA: crash tests for AI incident agents">
-<meta property="og:description" content="Know how your AI incident agent behaves in an outage, before the outage.">
+<meta property="og:title" content="TypeRCA: game days for AI incident agents">
+<meta property="og:description" content="Test how they investigate, decide, and act, before a real outage does.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://typerca.io/og.png">
 <meta property="og:image:width" content="1200">
@@ -115,7 +115,7 @@ h2{font:500 clamp(32px,4.4vw,48px)/1.08 var(--sans);letter-spacing:-.04em;margin
 .path li.now{border-color:var(--accent)}
 .path li.now h3,.path li.now .tag{color:var(--accent)}
 
-/* crash test */
+/* game day */
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:48px;margin-top:48px;align-items:start}
 .steps{list-style:none;margin:0;padding:0;counter-reset:c}
 .steps li{display:grid;grid-template-columns:34px 1fr;gap:4px;padding:16px 0;border-top:1px solid var(--line);font-size:16.5px}
@@ -232,7 +232,7 @@ footer a:hover{color:var(--text)}
       TypeRCA
     </a>
     <nav aria-label="Main">
-      <a class="opt" href="#crash">Crash test</a>
+      <a class="opt" href="#gameday">Game day</a>
       <a class="opt" href="#path">Trust path</a>
       <a class="opt" href="#shadow">Shadow mode</a>
       <a class="opt" href="#origin">Results</a>
@@ -242,7 +242,7 @@ footer a:hover{color:var(--text)}
     </nav>
   </div>
   <nav class="mnav" id="mnav" aria-label="Sections" hidden>
-    <a href="#crash">Crash test</a>
+    <a href="#gameday">Game day</a>
     <a href="#path">Trust path</a>
     <a href="#shadow">Shadow mode</a>
     <a href="#origin">Results</a>
@@ -252,13 +252,13 @@ footer a:hover{color:var(--text)}
 
 <main>
   <div class="hero wrap">
-    <span class="strip">Crash test <b>early access</b></span>
-    <h1>Crash tests for AI incident agents.</h1>
-    <p class="sub">Know how your AI agent behaves in an outage, before the outage.</p>
+    <span class="strip">Game day <b>early access</b></span>
+    <h1>Game days for AI incident agents.</h1>
+    <p class="sub">Test how they investigate, decide, and act, before a real outage does.</p>
     <p class="blurb">TypeRCA runs incident agents against controlled failures where the true cause is known. It scores whether the agent found the cause, and whether its evidence actually supports it. Next, it checks the same behavior in shadow mode on your own systems.</p>
     <div class="ctas">
       <a class="btn primary" href="#access">Get your agent tested</a>
-      <a class="btn ghost" href="demo/">Watch a crash test</a>
+      <a class="btn ghost" href="demo/">Watch a game day</a>
     </div>
     <p class="fine">No production actions. Not another AI SRE. Bring the agent you already have.</p>
   </div>
@@ -279,7 +279,7 @@ footer a:hover{color:var(--text)}
       <h2 id="t-h">Agents shouldn't get production access all at once.</h2>
       <p class="lead">TypeRCA gives them a path to earn it, one step at a time, on evidence.</p>
       <ol class="path">
-        <li class="now"><h3>Crash test</h3><p>Known failures. Known truth.</p><span class="tag">now · early access</span></li>
+        <li class="now"><h3>Game day</h3><p>Known failures. Known truth.</p><span class="tag">now · early access</span></li>
         <li><h3>Shadow mode</h3><p>Your real incidents. No actions.</p><span class="tag">next</span></li>
         <li><h3>Verified recommendations</h3><p>Measure what can be trusted.</p><span class="tag">later</span></li>
         <li><h3>Gated actions</h3><p>Automate proven, low-risk cases.</p><span class="tag">later</span></li>
@@ -288,9 +288,9 @@ footer a:hover{color:var(--text)}
     </div>
   </section>
 
-  <section id="crash" aria-labelledby="c-h">
+  <section id="gameday" aria-labelledby="c-h">
     <div class="wrap">
-      <h2 id="c-h">Crash test: how it works.</h2>
+      <h2 id="c-h">Game day: how it works.</h2>
       <p class="lead">Scored on how the agent got there, not just where it ended up.</p>
       <div class="two">
         <ol class="steps">
@@ -323,8 +323,8 @@ footer a:hover{color:var(--text)}
       <div class="report">
         <div class="tbl">
           <table>
-            <caption class="sr">Illustrative crash test report comparing agent v12 and v13</caption>
-            <thead><tr><th scope="col">Crash test · 50 incidents</th><th scope="col">Agent v12</th><th scope="col">Agent v13</th><th scope="col"><span class="sr">Change</span></th></tr></thead>
+            <caption class="sr">Illustrative game day report comparing agent v12 and v13</caption>
+            <thead><tr><th scope="col">Game day · 50 incidents</th><th scope="col">Agent v12</th><th scope="col">Agent v13</th><th scope="col"><span class="sr">Change</span></th></tr></thead>
             <tbody>
               <tr><td>Right root cause</td><td>82%</td><td class="better">86%</td><td class="chg">better</td></tr>
               <tr><td>Claims without supporting evidence</td><td>3%</td><td class="worse">11%</td><td class="chg no">worse</td></tr>
@@ -345,7 +345,7 @@ footer a:hover{color:var(--text)}
     <div class="wrap">
       <span class="label">coming next</span>
       <h2 id="s-h" style="margin-top:16px">Then prove it on your own system.</h2>
-      <p class="lead">Crash tests show how an agent behaves under controlled conditions. Shadow mode runs TypeRCA read-only next to your existing agent, on your real incidents.</p>
+      <p class="lead">Game days show how an agent behaves under controlled conditions. Shadow mode runs TypeRCA read-only next to your existing agent, on your real incidents.</p>
       <div class="two">
         <ol class="flow" aria-label="Shadow mode, step by step">
           <li><span class="who">your AI agent</span><code>"Roll back checkout v142."</code></li>
@@ -375,7 +375,7 @@ footer a:hover{color:var(--text)}
       </div>
       <p class="honest">That's our agent on our tests, not proof that TypeRCA can verify other agents yet. That's what we're building now.</p>
       <p class="limits">Limits today: it reads metrics only, and network failures are its weak spot. 12 verified answers is a small sample.</p>
-      <a class="more" href="demo/">Watch our agent's crash tests: 14 live incidents, misses included</a>
+      <a class="more" href="demo/">Watch our agent's game day: 14 live incidents, misses included</a>
     </div>
   </section>
 
@@ -392,14 +392,14 @@ footer a:hover{color:var(--text)}
     <div class="wrap">
       <div class="access">
         <h2 id="a-h">Building an AI incident agent?</h2>
-        <p class="lead">We're looking for a small number of teams to crash-test their agent against controlled production failures. Send us three things:</p>
+        <p class="lead">We're looking for a small number of teams to put their agent through a game day: controlled production failures with known causes. Send us three things:</p>
         <ul class="asks">
           <li>your name and email</li>
           <li>what agent you're building or using</li>
           <li>how you test it today</li>
         </ul>
         <div class="ctas">
-          <a class="btn primary" href="mailto:info@typerca.io?subject=Crash%20test%20my%20agent&amp;body=Name%3A%20%0AEmail%3A%20%0AAgent%20we're%20building%20or%20using%3A%20%0AHow%20we%20test%20it%20today%3A%20%0A">Get your agent tested</a>
+          <a class="btn primary" href="mailto:info@typerca.io?subject=Game%20day%20for%20my%20agent&amp;body=Name%3A%20%0AEmail%3A%20%0AAgent%20we're%20building%20or%20using%3A%20%0AHow%20we%20test%20it%20today%3A%20%0A">Get your agent tested</a>
           <a class="btn ghost" href="https://x.com/typerca">@typerca on X</a>
         </div>
       </div>
