@@ -172,7 +172,6 @@ td.chg{font:500 12.5px var(--mono);white-space:nowrap}
 .fact .big{font:500 36px/1 var(--sans);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .fact .big.ok{color:var(--accent)}
 .fact p{margin:10px 0 0;color:var(--dim);font-size:15px}
-.honest{margin:22px 0 0;padding:18px 22px;border-left:2px solid var(--text);background:var(--panel);border-radius:0 var(--r-md) var(--r-md) 0;font-size:16.5px;max-width:72ch}
 .more{display:inline-block;margin-top:22px;font:500 16px var(--sans);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px}
 .more:hover{border-color:var(--text)}
 .limits{margin:16px 0 0;font-size:14.5px;color:var(--faint);max-width:72ch;text-wrap:pretty}
@@ -365,16 +364,14 @@ footer a:hover{color:var(--text)}
 
   <section id="origin" aria-labelledby="o-h">
     <div class="wrap">
-      <h2 id="o-h">We built an RCA agent first. The harder problem was knowing when to trust it.</h2>
-      <p class="lead">Our own agent marks an answer <b>verified</b> only when the evidence supports it and every other plausible cause has been ruled out. We tested it on staged failures it had never seen, with the rules written down before each run.</p>
+      <h2 id="o-h">Our first game day: our own agent.</h2>
+      <p class="lead">Before testing anyone else's agent, we ran game days on our own. It marks an answer <b>verified</b> only when the evidence supports it and every other cause is ruled out. The failures were new to it, and the rules were written down before each run.</p>
       <div class="facts">
         <div class="fact"><div class="big">60</div><p>Staged failures on a microservice shop, from the RCAEval benchmark.</p></div>
         <div class="fact"><div class="big">58 of 60</div><p>Right service found.</p></div>
         <div class="fact"><div class="big ok">12 verified</div><p>Passed the strict rule. None of those 12 were wrong.</p></div>
         <div class="fact"><div class="big">9 of 14</div><p>Right on live failures we injected ourselves. 1 verified, none verified wrong.</p></div>
       </div>
-      <p class="honest">That's our agent on our tests, not proof that TypeRCA can verify other agents yet. That's what we're building now.</p>
-      <p class="limits">Limits today: it reads metrics only, and network failures are its weak spot. 12 verified answers is a small sample.</p>
       <a class="more" href="demo/">Watch our agent's game day: 14 live incidents, misses included</a>
     </div>
   </section>
