@@ -257,7 +257,6 @@ footer a:hover{color:var(--text)}
       <a class="opt" href="#origin">Results</a>
       <a class="opt" href="#report">Report</a>
       <a class="opt" href="#path">Trust path</a>
-      <a class="opt" href="demo/">Demo</a>
       <a class="cta" href="#access">Get tested</a>
       <button class="menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><span></span><span></span></button>
     </nav>
@@ -267,7 +266,6 @@ footer a:hover{color:var(--text)}
     <a href="#origin">Results</a>
     <a href="#report">Report</a>
     <a href="#path">Trust path</a>
-    <a href="demo/">Demo</a>
   </nav>
 </header>
 
@@ -279,7 +277,7 @@ footer a:hover{color:var(--text)}
     <p class="blurb">TypeRCA runs incident agents against controlled failures where the true cause is known. It scores whether the agent found the cause, and whether its evidence actually supports it. Next, it checks the same behavior in shadow mode on your own systems.</p>
     <div class="ctas">
       <a class="btn primary" href="#access">Get your agent tested</a>
-      <a class="btn ghost" href="demo/">Watch a game day</a>
+      <a class="btn ghost" href="#origin">Watch a game day</a>
     </div>
     <p class="fine">No production actions. Not another AI SRE. Bring the agent you already have.</p>
   </div>
@@ -323,7 +321,7 @@ footer a:hover{color:var(--text)}
             <div class="live-verdict" id="lv-verdict" hidden></div>
           </div>
         </div>
-        <div class="live-foot"><span id="lv-meta"></span><a id="lv-play" href="demo/">Play it yourself, step by step →</a></div>
+        <div class="live-foot"><span id="lv-meta"></span><span>14 recorded incidents, misses included</span></div>
       </div>
       <div class="facts">
         <div class="fact"><div class="big">60</div><p>Staged failures on a microservice shop, from the RCAEval benchmark.</p></div>
@@ -332,7 +330,6 @@ footer a:hover{color:var(--text)}
         <div class="fact"><div class="big">9 of 14</div><p>Right on live failures we injected ourselves. 1 verified, none verified wrong.</p></div>
       </div>
         <p class="motto-line"><b>The model judges. Plain code decides.</b> A decision model (today, TypeSafe's Jev) answers narrow questions about the evidence; plain code applies the rules and decides what counts as verified.</p>
-        <a class="more" href="demo/">All 14 live incidents, misses included</a>
       </div>
     </div>
   </section>
@@ -402,7 +399,6 @@ footer a:hover{color:var(--text)}
     <nav aria-label="Footer">
       <a href="mailto:info@typerca.io">info@typerca.io</a>
       <a href="https://x.com/typerca">X</a>
-      <a href="demo/">Demo</a>
     </nav>
   </div>
 </footer>
@@ -479,7 +475,6 @@ matchMedia('(min-width: 641px)').addEventListener('change', e => { if (e.matches
     $('lv-alert').innerHTML = `<b>ALERT</b>${a.replace(/^Alert at [^ ]+ UTC on the /, 'On the ')}`;
     const d = inc.started_at, when = new Date(`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${d.slice(9,11)}:${d.slice(11,13)}:00Z`);
     $('lv-meta').textContent = `${inc.decision_calls} decisions · ${inc.seconds} s · recorded ${when.toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'})}, ${d.slice(9,11)}:${d.slice(11,13)} UTC`;
-    $('lv-play').href = `demo/?n=${idx}`;
     $('lv-verdict').hidden = true;
     const steps = inc.steps.filter(s => s.type === 'check' || s.type === 'conclude' || s.type === 'answer');
     let i = 0;
@@ -496,8 +491,9 @@ matchMedia('(min-width: 641px)').addEventListener('change', e => { if (e.matches
   }
   $('lv-next').onclick = () => { if (!data) return; idx = idx % data.incidents.length + 1; play(); };
   $('lv-replay').onclick = () => data && play();
-  const start = () => fetch('demo/incidents.json').then(r => r.json()).then(d => {
-    data = d; idx = (d.incidents.findIndex(x => x.verified) + 1) || 1; play();
+  const start = () => fetch('data/incidents.json').then(r => r.json()).then(d => {
+    data = d; const n = +new URLSearchParams(location.search).get('n');
+    idx = n >= 1 && n <= d.incidents.length ? n : (d.incidents.findIndex(x => x.verified) + 1) || 1; play();
   }).catch(() => { $('lv-alert').textContent = 'Could not load the replay.'; });
   if ('IntersectionObserver' in window) new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); start(); } }, {threshold: .25}).observe(box);
   else start();
