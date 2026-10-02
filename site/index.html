@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TypeRCA: root-cause analysis on decision models</title>
+<meta name="description" content="A root-cause analysis agent built on decision models. The model judges; plain code decides.">
+<link rel="canonical" href="https://typerca.io/">
+<meta property="og:url" content="https://typerca.io/">
+<meta property="og:title" content="TypeRCA">
+<meta property="og:description" content="A root-cause analysis agent built on decision models. The model judges; plain code decides.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://typerca.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c0d0f'/%3E%3Cpath d='M9 22 L15 10 L17 16 L23 16' fill='none' stroke='%2358d39b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sans:"Geist", ui-sans-serif, system-ui, sans-serif;
+  --mono:"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --bg:#0c0d0f;
+  --panel:#131417;
+  --panel-2:#1a1b1f;
+  --line:#26272c;
+  --text:#f3f4f5;
+  --dim:#a1a3aa;
+  --faint:#8b8e96;
+  --accent:#58d39b;     /* only for "verified" and the rule that decides it */
+  --warn:#e8836b;
+  --btn-bg:#f3f4f5; --btn-fg:#0c0d0f;
+
+  --r-sm:8px; --r-md:12px; --r-lg:16px;   /* buttons 12, panels 16, chips 8 */
+  --wrap:1120px;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f6f6f4; --panel:#ffffff; --panel-2:#efefec; --line:#dcdcd7;
+    --text:#131417; --dim:#55575e; --faint:#6b6e76; --accent:#0e7d52; --warn:#b4452c;
+    --btn-bg:#131417; --btn-fg:#f6f6f4;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+code,pre{font-family:var(--mono)}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+.top{border-bottom:1px solid var(--line)}
+.top .wrap{height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;font:600 19px/1 var(--sans);letter-spacing:-.03em;text-decoration:none}
+.brand svg{width:26px;height:26px}
+.top .wrap>nav{display:flex;align-items:center;gap:26px;font:500 14px var(--sans);color:var(--dim)}
+.top .wrap>nav a{text-decoration:none}
+.top .wrap>nav a:hover{color:var(--text)}
+.top .gh{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:var(--r-md);padding:7px 12px;color:var(--text)}
+.top .gh:hover{background:var(--panel-2)}
+.ico{flex:none}
+.menu{display:none;width:40px;height:36px;border:1px solid var(--line);border-radius:var(--r-md);background:none;cursor:pointer;padding:0;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.menu span{display:block;width:16px;height:1.5px;background:var(--text);transition:transform .15s}
+.menu[aria-expanded="true"] span:first-child{transform:translateY(3.25px) rotate(45deg)}
+.menu[aria-expanded="true"] span:last-child{transform:translateY(-3.25px) rotate(-45deg)}
+.mnav{display:block;border-top:1px solid var(--line);padding:6px 16px 10px}
+.mnav[hidden]{display:none}
+.mnav a{display:block;padding:12px 0;font:500 17px var(--sans);text-decoration:none;border-bottom:1px solid var(--line)}
+.mnav a:last-child{border-bottom:0}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;padding:92px 0 0}
+.strip{display:inline-flex;align-items:center;gap:10px;font:400 15px var(--sans);color:var(--dim)}
+.strip b{font:500 13px var(--mono);color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px 8px;letter-spacing:0}
+h1{font:500 clamp(44px,7.4vw,80px)/1.02 var(--sans);letter-spacing:-.045em;margin:22px auto 0;max-width:15ch;text-wrap:balance}
+.sub{font-size:clamp(18px,2vw,21px);line-height:1.55;color:var(--dim);max-width:44ch;text-wrap:balance;margin:24px auto 0}
+.ctas{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:38px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-width:210px;height:52px;padding:0 22px;border-radius:var(--r-md);font:500 17px var(--sans);letter-spacing:-.01em;text-decoration:none;white-space:nowrap;transition:transform .12s,background .12s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--btn-bg);color:var(--btn-fg)}
+.btn.primary:hover{opacity:.9}
+.btn.ghost{border:1px solid var(--line);color:var(--text)}
+.btn.ghost:hover{background:var(--panel-2)}
+
+/* ---------- product showcase ---------- */
+.show{margin-top:88px;scroll-margin-top:24px}
+.tabs{display:flex;gap:6px;padding:6px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);width:max-content;max-width:100%;margin:0 auto;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{font:500 16px var(--sans);letter-spacing:-.01em;color:var(--dim);background:none;border:0;border-radius:var(--r-md);padding:10px 18px;cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--text)}
+.tabs button[aria-selected="true"]{background:var(--panel-2);color:var(--text)}
+.stage{margin-top:18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);font:400 13px var(--mono);color:var(--faint)}
+.bar .run{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.panel{display:none;min-height:430px}
+.panel.on{display:block;animation:swap .28s ease-out}
+@keyframes swap{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* investigate */
+.inv{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.log{padding:20px 22px;font:400 13px/1.75 var(--mono);color:var(--dim);border-right:1px solid var(--line);min-height:430px}
+.log div{white-space:pre-wrap}
+.log .me{color:var(--text)}
+.log .k{color:var(--text);background:var(--panel-2);border-radius:4px;padding:1px 5px}
+.log .no{color:var(--warn)}
+.log .ok{color:var(--accent)}
+.log .in{animation:line .25s ease-out both}
+@keyframes line{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.side{padding:20px 22px}
+.side h3{font:500 13px var(--mono);color:var(--faint);margin:0 0 14px;letter-spacing:0}
+.belief{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:6px 12px;margin-bottom:14px;font:400 13px var(--mono)}
+.belief .n{color:var(--dim)}
+.belief.top .n{color:var(--text)}
+.belief .p{font-variant-numeric:tabular-nums;color:var(--text)}
+.belief i{grid-column:1/3;height:3px;border-radius:2px;background:var(--text);transform-origin:left;transition:transform .5s cubic-bezier(.3,.7,.2,1)}
+.belief.alt i{background:var(--dim)}
+.gate{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.gate .state{font:500 15px var(--sans);margin-top:4px}
+.gate .state.ok{color:var(--accent)}
+.gate .state.no{color:var(--warn)}
+.gate .meta{font:400 13px var(--mono);color:var(--faint);margin-top:10px}
+.replay{font:500 13px var(--sans);color:var(--dim);background:none;border:1px solid var(--line);border-radius:var(--r-sm);padding:5px 10px;cursor:pointer}
+.replay:hover{color:var(--text)}
+
+/* verify */
+.ver{padding:26px 26px 18px}
+.ver p{margin:0 0 6px;color:var(--dim);max-width:62ch;font-size:15px}
+.chart{position:relative;margin-top:18px}
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .axis{fill:var(--faint);font:12px var(--mono)}
+.chart .threshold{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 5}
+.chart .thlabel{fill:var(--accent);font:500 12px var(--mono)}
+.chart .line{fill:none;stroke:var(--text);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .pt{fill:var(--text);stroke:var(--panel);stroke-width:2}
+.chart .pt.ok{fill:var(--accent)}
+.chart .lbl{fill:var(--text);font:12px var(--mono)}
+.chart .lbl.ok{fill:var(--accent);font-weight:500}
+.chart .check{fill:var(--faint);font:11px var(--mono)}
+.chart .hit{fill:transparent}
+.tip{position:absolute;pointer-events:none;background:var(--text);color:var(--bg);font:12px/1.5 var(--mono);padding:8px 10px;border-radius:var(--r-sm);max-width:260px;opacity:0;transition:opacity .12s}
+.tip.on{opacity:1}
+
+/* report */
+.rep{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.rep pre{margin:0;padding:22px 24px;font:400 13px/1.75 var(--mono);color:var(--dim);overflow-x:auto;border-right:1px solid var(--line)}
+.rep pre .v{color:var(--accent);font-weight:500}
+.rep pre .w{color:var(--text)}
+.rep aside{padding:22px 24px;color:var(--dim);font-size:15px}
+.rep aside p{margin:0 0 14px}
+.rep aside b{color:var(--text);font-weight:500}
+
+/* ---------- sections ---------- */
+section{padding:140px 0 0}
+h2{font:500 clamp(32px,4.4vw,48px)/1.08 var(--sans);letter-spacing:-.04em;margin:0;max-width:20ch;text-wrap:balance}
+.lead{font-size:18px;color:var(--dim);max-width:58ch;margin:18px 0 0}
+
+.qlist{display:grid;gap:12px}
+.q{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);padding:20px 22px}
+.q header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
+.q .t{font:600 17px var(--sans);letter-spacing:-.02em}
+.q .key{font:400 12.5px var(--mono);color:var(--faint)}
+.q blockquote{margin:0;color:var(--dim);font-size:15.5px;line-height:1.6}
+.q .ans{margin-top:12px;font:400 13px var(--mono);color:var(--faint)}
+.q .ans b{color:var(--text);font-weight:500}
+.q .ans .ok{color:var(--accent);font-weight:500}
+
+/* hero numbers */
+.stats{display:grid;grid-template-columns:repeat(3,auto);justify-content:center;margin:56px auto 0;padding:0}
+.stats>div{padding:0 36px;border-left:1px solid var(--line)}
+.stats>div:first-child{border-left:0}
+.stats dd{margin:0;font:500 34px/1.1 var(--sans);letter-spacing:-.035em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stats dt{font-size:14px;color:var(--dim);margin-top:6px;max-width:19ch;margin-left:auto;margin-right:auto}
+.stats>div{display:flex;flex-direction:column}
+.stats dd{order:-1}
+.stats-note{font-size:13.5px;color:var(--faint);max-width:52ch;margin:18px auto 0;text-wrap:balance}
+
+/* hero: what works today */
+.today{font-size:15px;color:var(--dim);max-width:56ch;margin:18px auto 0;text-wrap:balance}
+.today b{color:var(--text);font-weight:500}
+.today a{color:var(--text)}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:44px}
+.stage{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);padding:22px}
+.stage.now{border-color:var(--accent)}
+.stage h3{font:600 16px var(--sans);letter-spacing:-.02em;margin:0 0 14px}
+.stage.now h3{color:var(--accent)}
+.stage ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.stage li{color:var(--dim);font-size:15px;line-height:1.55}
+.stage li b{color:var(--text);font-weight:500}
+.stage code{font-size:13.5px;color:var(--text)}
+.limits{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--dim)}
+.limits b{color:var(--text);font-weight:500}
+
+/* how it works */
+.how{padding-top:140px}
+.three{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.three li{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);padding:24px}
+.three .n{font:500 13px var(--mono);color:var(--faint)}
+.three h3{font:600 20px/1.25 var(--sans);letter-spacing:-.025em;margin:10px 0 10px}
+.three p{margin:0;color:var(--dim);font-size:15.5px}
+.cap{text-align:center;color:var(--dim);font-size:16px;margin:0 0 18px}
+
+/* comparison */
+.cmp{margin-top:44px;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.cmp .row{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) minmax(0,1.4fr);border-top:1px solid var(--line)}
+.cmp .row:first-child{border-top:0}
+.cmp .row>span{padding:16px 20px;font-size:15.5px;line-height:1.5}
+.cmp .row>span:first-child{color:var(--text);font-weight:500}
+.cmp .row>span:nth-child(2){color:var(--dim)}
+.cmp .row>span:nth-child(3){color:var(--text);background:var(--panel)}
+.cmp .head>span{font:400 13px var(--mono);color:var(--faint);padding-top:14px;padding-bottom:14px}
+.cmp .head>span:nth-child(3){color:var(--text)}
+details.exact{margin-top:24px}
+details.exact summary{cursor:pointer;color:var(--dim);font:500 15px var(--sans);width:max-content;max-width:100%}
+details.exact summary:hover{color:var(--text)}
+details.exact .qlist{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+
+/* results */
+.res{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:56px;margin-top:52px;align-items:start}
+.tbl{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);overflow:hidden}
+table{border-collapse:collapse;width:100%;font:400 14.5px var(--sans)}
+th{font:400 13px var(--mono);color:var(--faint);text-align:right;padding:14px 20px 12px 8px}
+th:first-child,td:first-child{text-align:left;padding-left:22px}
+td{padding:14px 20px 14px 8px;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;color:var(--dim)}
+td:first-child{color:var(--text)}
+td.b{color:var(--text);font-weight:600}
+td.ok{color:var(--accent);font-weight:600}
+td.m{font-family:var(--mono);font-size:13px}
+.note{font-size:13.5px;color:var(--faint);margin:14px 2px 0}
+.defs{margin:22px 2px 0;display:grid;gap:12px}
+.defs dt{font:500 14px var(--sans);color:var(--text)}
+.defs dd{margin:2px 0 0;font-size:14px;color:var(--dim);max-width:62ch}
+.facts{display:grid;gap:26px}
+.fact .big{font:500 40px/1 var(--sans);letter-spacing:-.04em}
+.fact .big.ok{color:var(--accent)}
+.fact p{margin:8px 0 0;color:var(--dim);font-size:15.5px}
+.more{display:inline-block;margin-top:4px;font:500 15px var(--sans);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px}
+.more:hover{border-color:var(--text)}
+
+/* providers */
+.prov{margin-top:32px}
+.prov th,.prov td{text-align:left}
+.prov td{color:var(--dim)}
+.prov td:first-child{color:var(--text)}
+.prov td.ok{color:var(--accent);font-weight:500}
+.prov td a{text-underline-offset:3px;text-decoration-color:var(--line)}
+.prov td a:hover{text-decoration-color:var(--text)}
+.prov code{font-size:13px}
+
+/* start */
+.start{margin-top:14px}
+.contact{margin-top:56px;padding:32px 24px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);text-align:center}
+.contact h3{font:500 24px var(--sans);letter-spacing:-.02em;margin:0}
+.contact p{color:var(--dim);margin:8px 0 0}
+.contact .ctas{margin-top:22px}
+.code{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);overflow:hidden}
+.code .bar button{font:500 12.5px var(--sans);color:var(--dim);background:none;border:1px solid var(--line);border-radius:var(--r-sm);padding:4px 10px;cursor:pointer}
+.code .bar button:hover{color:var(--text)}
+.code pre{margin:0;padding:18px 20px;font:400 13px/1.75 var(--mono);color:var(--text);overflow-x:auto}
+.code .c{color:var(--faint)}
+.code p{margin:0;padding:0 20px 18px;color:var(--dim);font-size:14.5px}
+
+/* footer */
+footer{margin-top:140px;border-top:1px solid var(--line)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-top:26px;padding-bottom:44px;font-size:14px;color:var(--faint)}
+footer nav{display:flex;gap:24px}
+footer a{text-decoration:none}
+footer a:hover{color:var(--text)}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .three,details.exact .qlist{grid-template-columns:minmax(0,1fr)}
+  .cmp .row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .cmp .head>span:first-child{display:none}
+  .cmp .row>span{padding:4px 14px 14px;font-size:14.5px}
+  .cmp .row>span:first-child{grid-column:1/3;padding:14px 14px 4px}
+  .cmp .head>span{padding-top:12px;padding-bottom:12px}
+  .res{grid-template-columns:minmax(0,1fr);gap:36px}
+  .road,  .inv,.rep{grid-template-columns:minmax(0,1fr)}
+  .log,.rep pre{border-right:0;border-bottom:1px solid var(--line)}
+  .log{min-height:360px}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .top .wrap>nav .opt{display:none}
+  .top .wrap>nav{gap:10px}
+  .menu{display:inline-flex}
+  .hero{padding-top:64px}
+  .btn{width:100%}
+  .ctas{flex-direction:column;align-items:stretch;max-width:420px;margin-left:auto;margin-right:auto}
+  .show{margin-top:64px}
+  section{padding-top:100px}
+  .stats{grid-template-columns:minmax(0,1fr);gap:18px;margin-top:40px}
+  .stats>div{border-left:0;padding:0}
+  .stats dd{font-size:30px}
+  .log,.rep pre{font-size:12px;padding:16px}
+  .side,.rep aside,.ver{padding:18px 16px}
+  th,td{padding-right:12px}
+  th:first-child,td:first-child{padding-left:16px}
+  .prov thead{display:none}
+  .prov tr{display:grid;grid-template-columns:auto 1fr;border-top:1px solid var(--line);padding:12px 16px}
+  .prov tr:first-child{border-top:0}
+  .prov td{border:0;padding:0 12px 0 0}
+  .prov td:nth-child(3){grid-column:1/3;padding-top:4px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="TypeRCA home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 24 L14 8 L17.5 17 L26 17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="26" cy="17" r="3" fill="var(--accent)"/></svg>
+      TypeRCA
+    </a>
+    <nav aria-label="Main">
+      <a class="opt" href="/demo/">Demo</a>
+      <a class="opt" href="#roadmap">Roadmap</a>
+      <a class="opt" href="#how">How it works</a>
+      <a class="opt" href="#different">Why TypeRCA</a>
+      <a class="opt" href="#results">Results</a>
+      <button class="menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><span></span><span></span></button>
+    </nav>
+  </div>
+  <nav class="mnav" id="mnav" aria-label="Sections" hidden>
+    <a href="/demo/">Demo</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#how">How it works</a>
+    <a href="#different">Why TypeRCA</a>
+    <a href="#results">Results</a>
+    <a href="#start">How it runs</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <div class="hero wrap">
+    <h1>The model judges. Plain code decides.</h1>
+    <p class="sub">An on-call teammate that investigates every alert in seconds. It finds what broke (the service, the deploy, the config change), shows the evidence, says "verified" only when it's sure, and fixes the safe cases itself.</p>
+    <p class="today"><b>Today</b> it finds the faulty service from your Prometheus metrics. <b>Coming</b>: deploys and config changes, traces, logs, Slack, incident memory and safe fixes. <a href="#roadmap">See the roadmap</a></p>
+    <div class="ctas">
+      <a class="btn primary" href="#show">Watch an investigation</a>
+      <a class="btn ghost" href="#roadmap">See the roadmap</a>
+    </div>
+    <dl class="stats">
+      <div><dt>Right service</dt><dd>58/60</dd></div>
+      <div><dt>Passed verification; none of those 12 were wrong</dt><dd>12/60</dd></div>
+      <div><dt>Per investigation</dt><dd>~7 s, ~$0.004</dd></div>
+    </dl>
+    <p class="stats-note">On 60 staged fault injections it had never seen, from the RCAEval Online Boutique benchmark. Model: TypeSafe Jev 1.13. Time and cost are averages.</p>
+  </div>
+
+  <div class="show wrap" id="show">
+    <p class="cap">A recorded investigation of a staged benchmark incident: checkout slowed down. Watch it narrow 12 suspects to one.</p>
+    <div class="tabs" role="tablist" aria-label="A recorded investigation">
+      <button role="tab" id="t-inv" aria-controls="p-inv" aria-selected="true">Investigate</button>
+      <button role="tab" id="t-ver" aria-controls="p-ver" aria-selected="false" tabindex="-1">Verify</button>
+      <button role="tab" id="t-rep" aria-controls="p-rep" aria-selected="false" tabindex="-1">Report</button>
+    </div>
+    <div class="stage">
+      <div class="bar"><span class="run">recorded run rec_ob_025a43e8ef, Jev 1.13</span><button class="replay" id="replay" type="button">Replay</button></div>
+
+      <div class="panel on" id="p-inv" role="tabpanel" aria-labelledby="t-inv">
+        <div class="inv">
+          <div class="log" id="log" aria-live="off"></div>
+          <div class="side">
+            <h3>Most likely cause</h3>
+            <div id="beliefs"></div>
+            <div class="gate">
+              <h3>Verification rule, enforced by code</h3>
+              <div class="state" id="gate">Waiting for evidence</div>
+              <div class="meta" id="meta">0 of 8 checks, 0.0 s</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-ver" role="tabpanel" aria-labelledby="t-ver" hidden>
+        <div class="ver">
+          <p>Checkoutservice led from the first check. Frontend had been plausible, so code held the verdict until the model said a check had ruled frontend out with at least 0.50. It took until round 7.</p>
+          <div class="chart" id="chart">
+            <svg id="svg" viewBox="0 0 960 300" role="img" aria-labelledby="chart-t chart-d">
+              <title id="chart-t">Probability that frontend is ruled out, per round</title>
+              <desc id="chart-d">Rounds 3 to 7: 0.33, 0.45, 0.47, 0.38, 0.54. The rule needs 0.50. Verified at round 7.</desc>
+            </svg>
+            <div class="tip" id="tip" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-rep" role="tabpanel" aria-labelledby="t-rep" hidden>
+        <div class="rep">
+<pre><span class="v">Root cause: checkoutservice (verified)</span>
+<span class="w">What failed:</span>
+  - checkoutservice_dashboard:
+    latency  0.231 -> 0.478    2.07x  +35s
+    CPU      0.374 -> 16.35   43.68x   +9s
+    memory  10 MiB -> 246 MiB 24.98x   +9s
+<span class="w">Where it showed:</span>
+  - latency_by_service: checkoutservice
+    2.07x, left normal range at +35s
+<span class="w">Ruled out:</span> emailservice, frontend,
+  paymentservice, productcatalogservice,
+  redis, shippingservice
+<span class="w">Not used as evidence (failed or empty):</span>
+  checkoutservice_disk
+<span class="w">Checks run:</span> 8</pre>
+          <aside>
+            <p><b>Code writes the report, not the model.</b> The likely faulty service, the measured changes that support it, where they showed, what was ruled out, and what wasn't.</p>
+            <p>Failed or empty queries never count as evidence, and the model never sees an unrun check's result or the answer key.</p>
+            <p>If nothing on the list explains the incident, the answer is an escalation instead of a forced pick.</p>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="roadmap" aria-labelledby="rm-h">
+    <div class="wrap">
+      <h2 id="rm-h">Where it's going.</h2>
+      <p class="lead">From "which service broke" to "what changed, why, and the fix", with the same rule throughout: it only says verified when the evidence holds.</p>
+      <div class="road">
+        <div class="stage now">
+          <h3>Live today</h3>
+          <ul>
+            <li><b>Finds the faulty service</b> from Prometheus metrics. <code>typerca init</code> sets it up in one command.</li>
+            <li><b>Finds when it broke</b> from a rough time like "20 min ago".</li>
+            <li><b>Sees network slowdowns on the right service</b>, by measuring each service from its callers' side.</li>
+            <li><b>Says "verified" only when sure.</b> Plain code checks the evidence; everything else is labelled a lead.</li>
+            <li><b>About 7 seconds and under a cent</b> per investigation.</li>
+            <li><b>Every investigation can be replayed</b> step by step.</li>
+          </ul>
+          <p class="limits"><b>Known limits today:</b> on network problems it sometimes still blames the wrong service, and it only reads metrics for now.</p>
+        </div>
+        <div class="stage">
+          <h3>Next</h3>
+          <ul>
+            <li><b>Deploys and config changes as causes.</b> "The checkout deploy at 03:10", not just "checkout".</li>
+            <li><b>Runs on every alert, answers in Slack.</b> Posted before anyone opens a laptop, with a one-click "right / wrong".</li>
+            <li><b>Incident memory.</b> "This looks like last month's outage, fixed by rolling back the cart deploy."</li>
+          </ul>
+        </div>
+        <div class="stage">
+          <h3>Later</h3>
+          <ul>
+            <li><b>The whole call chain.</b> It already measures each service from its callers; next it follows the full chain, so a slow network is never blamed on the caller.</li>
+            <li><b>Logs.</b> Which error messages are new since things broke.</li>
+            <li><b>Suggested fixes, then safe automatic ones.</b> Roll back or restart only when verified and your policy allows it.</li>
+            <li><b>Prove it on your own system.</b> Inject test faults in staging and get a score before you trust it.</li>
+            <li><b>More sources</b> beyond Prometheus, such as Datadog and CloudWatch.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="how" aria-labelledby="h-h">
+    <div class="wrap">
+      <h2 id="h-h">How it works</h2>
+      <ol class="three">
+        <li><span class="n">1</span><h3>Tell it when something broke</h3><p>Give it the time of the alert. It looks at your metrics and lists the services that changed around then.</p></li>
+        <li><span class="n">2</span><h3>It follows one clue at a time</h3><p>It looks at one thing, such as a service's memory or error rate, then asks an AI decision model which service best explains what it has seen so far. It stops after a set number of looks. The AI decision model today is TypeSafe's Jev.</p></li>
+        <li><span class="n">3</span><h3>It only says "verified" when the evidence holds</h3><p>The AI weighs each clue, but plain code makes the final call. An answer is marked verified only if a clue points to it and every other likely service has been ruled out. Otherwise it's marked unverified: a strong lead, not proof.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="different" aria-labelledby="d-h">
+    <div class="wrap">
+      <h2 id="d-h">What the model does, and what code does.</h2>
+      <p class="lead">The AI decision model only answers small, fixed questions. Plain code makes every move and every final call, so the rules are readable, testable and the same every time.</p>
+      <div class="cmp" role="table" aria-label="Division of work">
+        <div class="row head" role="row"><span role="columnheader"></span><span role="columnheader">AI decision model</span><span role="columnheader">Plain code</span></div>
+        <div class="row" role="row"><span role="rowheader">Next step</span><span role="cell">Suggests what to look at next</span><span role="cell">Only looks at things on the list, up to a set limit</span></div>
+        <div class="row" role="row"><span role="rowheader">Evidence</span><span role="cell">Judges what each clue means</span><span role="cell">Ignores broken or empty data</span></div>
+        <div class="row" role="row"><span role="rowheader">Stopping</span><span role="cell">Says if it has seen enough</span><span role="cell">Stops at fixed rules, or when the limit is reached</span></div>
+        <div class="row" role="row"><span role="rowheader">Verified</span><span role="cell">Says how sure it is each other service is ruled out</span><span role="cell">Says “verified” only if every other likely service is ruled out</span></div>
+        <div class="row" role="row"><span role="rowheader">Report</span><span role="cell">Writes nothing</span><span role="cell">Writes the report from real numbers</span></div>
+        <div class="row" role="row"><span role="rowheader">Audit</span><span role="cell">Its answers are recorded</span><span role="cell">Any investigation can be replayed exactly</span></div>
+      </div>
+      <details class="exact">
+        <summary>See the exact questions the model answers</summary>
+        <div class="qlist">
+        <article class="q">
+          <header><span class="t">Choice</span><span class="key">best_explanation</span></header>
+          <blockquote>Which hypothesis best explains all of the evidence observed so far? Weigh every observation, including any that contradict a hypothesis.</blockquote>
+          <div class="ans">After latency_by_service: checkoutservice <b>0.97</b>, redis <b>0.02</b></div>
+        </article>
+        <article class="q">
+          <header><span class="t">Yes or no</span><span class="key">ruled_out:frontend</span></header>
+          <blockquote>Does the evidence observed so far rule out frontend as the root cause? Yes only if a specific observed result is inconsistent with it. Not having tested it is not ruling it out.</blockquote>
+          <div class="ans">Round 7: yes <span class="ok">0.54</span>, clears the 0.50 rule</div>
+        </article>
+        <article class="q">
+          <header><span class="t">Score</span><span class="key">ordered rubric</span></header>
+          <blockquote>Where does this fall on an ordered scale? One distribution over the levels.</blockquote>
+          <div class="ans">Part of the decision-model interface</div>
+        </article>
+      </div>
+      </details>
+    </div>
+  </section>
+
+  <section id="results" aria-labelledby="r-h">
+    <div class="wrap">
+      <h2 id="r-h">Tested on incidents it had never seen.</h2>
+      <p class="lead">60 Online Boutique fault injections from RCAEval, built twice: without the timeline and per-service dashboard checks (A) and with them (B). Same model, same loop, at most 8 checks, preregistered.</p>
+      <div class="res">
+        <div>
+          <div class="tbl">
+            <table>
+              <thead><tr><th scope="col">Out of 60</th><th scope="col">A</th><th scope="col">B</th><th scope="col">Paired</th></tr></thead>
+              <tbody>
+                <tr><td>Right service</td><td>57</td><td class="b">58</td><td class="m">p = 1</td></tr>
+                <tr><td>Supported diagnosis</td><td>44</td><td class="b">58</td><td class="m">p = 0.001</td></tr>
+                <tr><td>Verified by the strict rule</td><td>0</td><td class="ok">12</td><td class="m">p &lt; 0.001</td></tr>
+                <tr><td>Verified but wrong</td><td>0</td><td class="b">0</td><td></td></tr>
+                <tr><td>Mean checks run</td><td>7.98</td><td class="b">6.80</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note">Model: Jev 1.13, from TypeSafe. Estimated model cost per investigation with B: $0.0041.</p>
+          <dl class="defs">
+            <div><dt>Right service</dt><dd>Named the service where the fault was injected.</dd></div>
+            <div><dt>Supported diagnosis</dt><dd>Right service, and its cited evidence holds up: it cited only checks it ran, no failed or empty query, and at least one check whose result shows the injected fault. A per-service dashboard counts, since it holds every metric.</dd></div>
+            <div><dt>Verified</dt><dd>Passed code's strict rule: a check supports the answer and every once-plausible alternative is judged ruled out.</dd></div>
+          </dl>
+        </div>
+        <div class="facts">
+          <div class="fact"><div class="big ok">10 of 10</div><p>Disk faults with a supported diagnosis, up from 0 of 10.</p></div>
+          <div class="fact"><div class="big">2 misses</div><p>Both were network faults blamed on a neighbouring service. Still open.</p></div>
+          <div class="fact"><div class="big">120 replayed</div><p>The baseline run replays exactly in CI on every change.</p></div>
+          <div class="fact"><div class="big">4 of 6</div><p>Also tried on a live system: 6 test faults, 4 found, 1 verified, none verified wrong. Both misses were network faults again. Six cases, not a benchmark.</p></div>
+          <div class="fact"><div class="big">5 of 8</div><p>Two more live rounds, measuring each service from its callers: 5 of 8 found, none verified wrong. Network problems now show on the right service, but it doesn't always pick it yet. <a href="/demo/">Step through all 14 live incidents</a>.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start" aria-labelledby="s-h">
+    <div class="wrap">
+      <h2 id="s-h">How it runs.</h2>
+      <p class="lead">Python 3.10 or newer, standard library only. It runs on TypeSafe's Jev decision model, with decision thresholds tuned for it.</p>
+      <div class="tbl prov">
+        <table>
+          <thead><tr><th scope="col">Provider</th><th scope="col">--model</th><th scope="col">Status</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://openrouter.ai/models/typesafe/jev-1.13">TypeSafe Jev</a></td><td class="m">jev</td><td class="ok">Supported, used for every result on this page</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="start">
+        <div class="code">
+          <div class="bar"><span>shell</span><button type="button" data-copy="c1">Copy</button></div>
+<pre id="c1"><span class="c"># tests run offline, no API key</span>
+python3 -m unittest discover -s tests -t .
+
+<span class="c"># investigate recorded incidents (TypeSafe key for Jev)</span>
+export TYPESAFE_API_KEY=...
+python3 -m typerca run --scenarios bench/re2-test2 \
+    --model jev --out runs/jev.jsonl
+
+<span class="c"># or a live alert: detect your metrics once, then investigate</span>
+python3 -m typerca init --prometheus http://prometheus:9090
+python3 -m typerca investigate \
+    --prometheus http://prometheus:9090 \
+    --around "20 min ago" --config typerca-config.json</pre>
+          <p><code>init</code> recognises Istio, Linkerd, OpenTelemetry, Prometheus HTTP histograms and cAdvisor, writes the queries, and shows which services have which data. Only if it finds nothing it knows, write the queries by hand. <code>--around</code> finds when things started; if you know the exact time, use <code>--at</code>.</p>
+        </div>
+      </div>
+      <div class="contact" id="contact">
+        <h3>Want to try it on your stack?</h3>
+        <p>It's in early access. Email us or say hi on X.</p>
+        <div class="ctas">
+          <a class="btn primary" href="mailto:info@typerca.io">info@typerca.io</a>
+          <a class="btn ghost" href="https://x.com/typerca">@typerca on X</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>&copy; 2026 TypeRCA.</span>
+    <nav aria-label="Footer">
+      <a href="mailto:info@typerca.io">info@typerca.io</a>
+      <a href="https://x.com/typerca">X</a>
+      <a href="https://github.com/phamquiluan/RCAEval">RCAEval</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- phone menu ---------- */
+const menu = document.querySelector('.menu'), mnav = document.getElementById('mnav');
+const setMenu = open => { menu.setAttribute('aria-expanded', open); mnav.hidden = !open; };
+menu.addEventListener('click', () => setMenu(mnav.hidden));
+mnav.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !mnav.hidden) { setMenu(false); menu.focus(); } });
+matchMedia('(min-width: 641px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
+
+/* ---------- tabs ---------- */
+const tabs = [...document.querySelectorAll('[role=tab]')];
+function select(tab) {
+  tabs.forEach(t => {
+    const on = t === tab, p = document.getElementById(t.getAttribute('aria-controls'));
+    t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+    p.hidden = !on; p.classList.toggle('on', on);
+  });
+  if (tab.id === 't-ver') draw();
+}
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => select(t));
+  t.addEventListener('keydown', e => {
+    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (d) { const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); select(n); }
+  });
+});
+
+/* ---------- investigate: replay of rec_ob_025a43e8ef (results/re2-ob-fresh/B-v2.jsonl) ---------- */
+const STEPS = [
+  {ms:0, lines:[['me','12 suspects, budget 8 checks'], ['','before any check: frontend 1.00 (the entry service)']], bel:{frontend:1}, gate:['', 'Waiting for evidence']},
+  {ms:742, chk:1, lines:[['','round 1  5 questions  742 ms'], ['','run <k>latency_by_service</k>'], ['','  checkoutservice 0.231 -> 0.478 (2.07x)']], bel:{checkoutservice:.97, redis:.02}, gate:['', 'Not asked yet']},
+  {ms:815, chk:1, lines:[['','round 2  5 questions  815 ms'], ['','run <k>timeline</k>'], ['','  checkoutservice CPU, memory, sockets move first']], bel:{checkoutservice:1}, gate:['', 'Not asked yet']},
+  {ms:1107, chk:1, lines:[['','round 3  verify checkoutservice'], ['no','  frontend not ruled out: 0.33 < 0.50'], ['','run <k>checkoutservice_dashboard</k>']], bel:{checkoutservice:1}, gate:['no', 'Not verified: frontend 0.33']},
+  {ms:1116, chk:1, lines:[['no','round 4  frontend 0.45 < 0.50'], ['','run <k>redis_dashboard</k>']], bel:{checkoutservice:1}, gate:['no', 'Not verified: frontend 0.45']},
+  {ms:1105, chk:1, lines:[['no','round 5  frontend 0.47 < 0.50'], ['','run <k>recommendationservice_dashboard</k>']], bel:{checkoutservice:1}, gate:['no', 'Not verified: frontend 0.47']},
+  {ms:1060, chk:1, lines:[['no','round 6  frontend 0.38 < 0.50'], ['','run <k>frontend_dashboard</k>']], bel:{checkoutservice:1}, gate:['no', 'Not verified: frontend 0.38']},
+  {ms:795, lines:[['ok','round 7  frontend ruled out 0.54 >= 0.50'], ['','conclude checkoutservice, look inside']], bel:{checkoutservice:1}, gate:['ok', 'Verified']},
+  {ms:328, chk:1, lines:[['','run <k>checkoutservice_disk</k>'], ['no','  empty, not used as evidence']], bel:{checkoutservice:1}, gate:['ok', 'Verified']},
+  {ms:489, chk:1, lines:[['','run <k>checkoutservice_sockets</k>'], ['','  open sockets 9.00 -> 11.91, +9s']], bel:{checkoutservice:1}, gate:['ok', 'Verified']},
+  {ms:651, lines:[['ok','answer: checkoutservice (verified)'], ['me','22 decision calls, 8.2 s']], bel:{checkoutservice:1}, gate:['ok', 'Verified'], end:true},
+];
+const SUS = ['checkoutservice', 'frontend', 'redis'];
+const $log = document.getElementById('log'), $bel = document.getElementById('beliefs'),
+      $gate = document.getElementById('gate'), $meta = document.getElementById('meta');
+$bel.innerHTML = SUS.map(s => '<div class="belief" data-s="' + s + '"><span class="n">' + s + '</span><span class="p">0.00</span><i style="transform:scaleX(0)"></i></div>').join('');
+let step = 0, t = 0, checks = 0, timer = null;
+
+function render(s, animate) {
+  s.lines.forEach(([c, h], k) => {
+    const d = document.createElement('div');
+    d.className = c + (animate ? ' in' : '');
+    if (animate) d.style.animationDelay = (k * 160) + 'ms';
+    d.innerHTML = h.replace(/<k>(.*?)<\/k>/g, '<span class="k">$1</span>');
+    $log.appendChild(d);
+  });
+  t += s.ms / 1000; if (s.chk) checks++;
+  const lead = Object.entries(s.bel).sort((a, b) => b[1] - a[1])[0][0];
+  SUS.forEach(k => {
+    const row = $bel.querySelector('[data-s="' + k + '"]'), v = s.bel[k] || 0;
+    row.className = 'belief' + (k === lead ? ' top' : ' alt');
+    row.querySelector('.p').textContent = v.toFixed(2);
+    row.querySelector('i').style.transform = 'scaleX(' + v + ')';
+  });
+  $gate.className = 'state ' + s.gate[0]; $gate.textContent = s.gate[1];
+  $meta.textContent = checks + ' of 8 checks, ' + t.toFixed(1) + ' s';
+}
+function reset() { clearTimeout(timer); timer = null; $log.innerHTML = '<div class="me">replaying rec_ob_025a43e8ef</div>'; step = 0; t = 0; checks = 0; }
+function play() {
+  render(STEPS[step], true);
+  if (STEPS[step].end) { timer = null; return; }
+  step++;
+  timer = setTimeout(play, 1500);
+}
+reset();
+if (reduce) { STEPS.forEach(s => render(s, false)); }
+else {
+  new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { play(); io.disconnect(); } }, {threshold: .35})
+    .observe(document.getElementById('show'));
+}
+document.getElementById('replay').addEventListener('click', () => {
+  select(tabs[0]); reset();
+  if (reduce) STEPS.forEach(s => render(s, false)); else play();
+});
+
+/* ---------- verify chart (same run) ---------- */
+const RUN = [
+  {r:3, p:.33, next:'checkoutservice_dashboard', ok:false},
+  {r:4, p:.45, next:'redis_dashboard', ok:false},
+  {r:5, p:.47, next:'recommendationservice_dashboard', ok:false},
+  {r:6, p:.38, next:'frontend_dashboard', ok:false},
+  {r:7, p:.54, next:'what-failed checks', ok:true},
+];
+const RULE = .5, NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('svg'), tip = document.getElementById('tip'), box = document.getElementById('chart');
+function draw() {
+  const W = Math.max(280, Math.min(1060, box.clientWidth)); if (!box.clientWidth) return;
+  const narrow = W < 600, H = narrow ? 240 : 300, L = 44, R = narrow ? 56 : 140, T = 16, B = narrow ? 40 : 60;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.querySelectorAll(':not(title):not(desc)').forEach(n => n.remove());
+  const x = i => L + i * (W - L - R) / (RUN.length - 1), y = v => T + (1 - v) * (H - T - B);
+  const el = (n, a, text) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (text != null) e.textContent = text; svg.appendChild(e); return e; };
+  [0, .25, .5, .75, 1].forEach(v => {
+    el('line', {class:'grid', x1:L, x2:W - R + 20, y1:y(v), y2:y(v)});
+    el('text', {class:'axis', x:L - 10, y:y(v) + 4, 'text-anchor':'end'}, v.toFixed(2));
+  });
+  el('line', {class:'threshold', x1:L, x2:W - R + 20, y1:y(RULE), y2:y(RULE)});
+  el('text', {class:'thlabel', x:W - R + (narrow ? 22 : 30), y:y(RULE) + 20}, narrow ? 'rule' : 'rule: 0.50');
+  RUN.forEach((d, i) => {
+    el('text', {class:'axis', x:x(i), y:H - B + 22, 'text-anchor':'middle'}, narrow ? 'r' + d.r : 'round ' + d.r);
+    if (!narrow) el('text', {class:'check', x:x(i), y:H - B + 40, 'text-anchor':'middle'}, d.ok ? 'verified' : 'not verified');
+  });
+  const path = el('path', {class:'line', d: RUN.map((d, i) => (i ? 'L' : 'M') + x(i) + ' ' + y(d.p)).join(' ')});
+  RUN.forEach((d, i) => {
+    el('circle', {class:'pt' + (d.ok ? ' ok' : ''), cx:x(i), cy:y(d.p), r:5});
+    if (i === 0 || d.ok) el('text', {class:'lbl' + (d.ok ? ' ok' : ''), x:x(i) + (d.ok ? 12 : 0), y:y(d.p) + (d.ok ? 4 : -14), 'text-anchor': d.ok ? 'start' : 'middle'}, d.p.toFixed(2) + (d.ok && !narrow ? ' verified' : ''));
+    const hit = el('rect', {class:'hit', x:x(i) - 24, y:T, width:48, height:H - T - B + 10, tabindex:0, 'aria-label':'Round ' + d.r + ': ' + d.p.toFixed(2)});
+    const show = () => {
+      tip.innerHTML = 'round ' + d.r + '<br>P(frontend ruled out) ' + d.p.toFixed(2) + '<br>' + (d.ok ? 'clears 0.50: verified' : 'below 0.50: not verified') + '<br>next: ' + d.next;
+      tip.classList.add('on');
+      tip.style.left = Math.min(Math.max(x(i) - tip.offsetWidth / 2, 0), W - tip.offsetWidth) + 'px';
+      tip.style.top = (y(d.p) - tip.offsetHeight - 14) + 'px';
+    };
+    const hide = () => tip.classList.remove('on');
+    hit.addEventListener('pointerenter', show); hit.addEventListener('pointerleave', hide);
+    hit.addEventListener('focus', show); hit.addEventListener('blur', hide);
+  });
+  if (!reduce) {
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+    requestAnimationFrame(() => { path.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.3,.7,.2,1)'; path.style.strokeDashoffset = 0; });
+  }
+}
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (!document.getElementById('p-ver').hidden) draw(); }, 150); });
+
+/* ---------- copy buttons ---------- */
+document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).innerText); b.textContent = 'Copied'; }
+  catch { b.textContent = 'Select and copy'; }
+  setTimeout(() => b.textContent = 'Copy', 1600);
+}));
+</script>
+</body>
+</html>
