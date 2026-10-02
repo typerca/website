@@ -116,26 +116,18 @@ h2{font:500 clamp(32px,4.4vw,48px)/1.08 var(--sans);letter-spacing:-.04em;margin
 .path li.now h3,.path li.now .tag{color:var(--accent)}
 
 /* game day */
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:48px;margin-top:48px;align-items:start}
-.steps{list-style:none;margin:0;padding:0;counter-reset:c}
-.steps li{display:grid;grid-template-columns:34px 1fr;gap:4px;padding:16px 0;border-top:1px solid var(--line);font-size:16.5px}
-.steps li:first-child{border-top:0;padding-top:0}
-.steps li::before{counter-increment:c;content:counter(c);font:500 14px/1.7 var(--mono);color:var(--faint)}
-.steps li span{color:var(--dim)}
-.steps li b{color:var(--text);font-weight:500}
-.card{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);overflow:hidden}
-.card .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);font:400 13px var(--mono);color:var(--faint)}
-.card .claim{padding:16px 18px;border-bottom:1px solid var(--line);font:400 14px/1.6 var(--mono);color:var(--dim)}
-.card .claim b{color:var(--text);font-weight:500}
-.score{list-style:none;margin:0;padding:6px 18px 8px}
-.score li{display:grid;grid-template-columns:110px 22px 1fr;gap:8px;align-items:baseline;padding:11px 0;border-top:1px solid var(--line);font-size:15px}
-.score li:first-child{border-top:0}
-.score .k{font:400 12.5px var(--mono);color:var(--faint);letter-spacing:.02em;text-transform:uppercase}
-.score .m{font:600 15px var(--mono);text-align:center}
-.score .m.w{color:var(--warn)}
-.score .v{color:var(--dim)}
-.verdict{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 12px;padding:14px 18px;border-top:1px solid var(--line);background:var(--panel-2);font:500 14px var(--mono)}
-.verdict .no{font-weight:600}
+.srow{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;counter-reset:c}
+.srow li{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);padding:18px;font-size:15px;line-height:1.5}
+.srow li::before{counter-increment:c;content:counter(c);display:block;font:500 13px var(--mono);color:var(--faint);margin-bottom:8px}
+.srow b{display:block;color:var(--text);font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.srow span{color:var(--dim)}
+.real{margin-top:72px;scroll-margin-top:12px}
+.real h3{font:500 clamp(24px,3vw,32px)/1.15 var(--sans);letter-spacing:-.035em;margin:0}
+.motto-line{margin:22px 0 0;font-size:15.5px;color:var(--dim);max-width:72ch}
+.motto-line b{color:var(--text);font-weight:600}
+.shadow-note{margin:22px 0 0;padding:18px 22px;border:1px dashed var(--line);border-radius:var(--r-lg);font-size:15.5px;color:var(--dim);max-width:none}
+.shadow-note b{color:var(--text);font-weight:600}
+.shadow-note .ok,.shadow-note .no{font:500 13.5px var(--mono)}
 
 /* regression report */
 .report{margin-top:48px}
@@ -153,21 +145,8 @@ td.chg{font:500 12.5px var(--mono);white-space:nowrap}
 .regress span{color:var(--dim);font-size:15px;max-width:62ch}
 .punch{font:500 clamp(22px,2.6vw,28px)/1.25 var(--sans);letter-spacing:-.03em;margin:28px 0 0;max-width:34ch;text-wrap:balance}
 
-/* shadow mode */
-.flow{list-style:none;margin:0;padding:0;display:grid;gap:12px}
-.flow li{border:1px solid var(--line);border-radius:var(--r-md);background:var(--panel);padding:14px 18px;font-size:15.5px;position:relative}
-.flow li:not(:last-child)::after{content:"";position:absolute;left:28px;bottom:-13px;width:1px;height:12px;background:var(--faint)}
-.flow .who{font:400 12.5px var(--mono);color:var(--faint);display:block;margin-bottom:2px}
-.flow code{font-size:14px}
-.flow .vs{font:500 13.5px var(--mono)}
-.flow li.quiet{background:none;border-style:dashed;color:var(--dim)}
-.points{margin:0;padding:0;list-style:none;display:grid;gap:14px}
-.points li{color:var(--dim);font-size:16px;padding-left:18px;position:relative}
-.points li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border-radius:50%;background:var(--faint)}
-.points b{color:var(--text);font-weight:500}
-
 /* origin */
-.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:48px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:14px}
 .fact{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);padding:22px}
 .fact .big{font:500 36px/1 var(--sans);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .fact .big.ok{color:var(--accent)}
@@ -221,8 +200,6 @@ td.chg{font:500 12.5px var(--mono);white-space:nowrap}
   .live-map .tag{font-size:11px}
 }
 
-/* scoring */
-.motto{font:500 clamp(30px,4vw,44px)/1.1 var(--sans);letter-spacing:-.04em;margin:28px 0 0}
 
 /* access */
 .access{padding:44px 32px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);text-align:center}
@@ -243,6 +220,7 @@ footer a:hover{color:var(--text)}
   .path{grid-template-columns:minmax(0,1fr)}
   .path li:not(:last-child)::after{top:auto;bottom:-13px;right:auto;left:28px;width:1px;height:12px}
   .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .srow{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:900px){
   .three,.two{grid-template-columns:minmax(0,1fr)}
@@ -258,7 +236,6 @@ footer a:hover{color:var(--text)}
   .ctas{flex-direction:column;align-items:stretch;max-width:420px;margin-left:auto;margin-right:auto}
   section{padding-top:96px}
   .facts{grid-template-columns:minmax(0,1fr)}
-  .score li{grid-template-columns:92px 20px 1fr;font-size:14.5px}
   th,td{padding-right:10px}
   th:first-child,td:first-child{padding-left:14px}
   table{font-size:14px}
@@ -277,9 +254,9 @@ footer a:hover{color:var(--text)}
     </a>
     <nav aria-label="Main">
       <a class="opt" href="#gameday">Game day</a>
-      <a class="opt" href="#path">Trust path</a>
-      <a class="opt" href="#shadow">Shadow mode</a>
       <a class="opt" href="#origin">Results</a>
+      <a class="opt" href="#report">Report</a>
+      <a class="opt" href="#path">Trust path</a>
       <a class="opt" href="demo/">Demo</a>
       <a class="cta" href="#access">Get tested</a>
       <button class="menu" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><span></span><span></span></button>
@@ -287,9 +264,9 @@ footer a:hover{color:var(--text)}
   </div>
   <nav class="mnav" id="mnav" aria-label="Sections" hidden>
     <a href="#gameday">Game day</a>
-    <a href="#path">Trust path</a>
-    <a href="#shadow">Shadow mode</a>
     <a href="#origin">Results</a>
+    <a href="#report">Report</a>
+    <a href="#path">Trust path</a>
     <a href="demo/">Demo</a>
   </nav>
 </header>
@@ -318,44 +295,44 @@ footer a:hover{color:var(--text)}
     </div>
   </section>
 
-  <section id="path" aria-labelledby="t-h">
-    <div class="wrap">
-      <h2 id="t-h">Agents shouldn't get production access all at once.</h2>
-      <p class="lead">TypeRCA gives them a path to earn it, one step at a time, on evidence.</p>
-      <ol class="path">
-        <li class="now"><h3>Game day</h3><p>Known failures. Known truth.</p><span class="tag">now · early access</span></li>
-        <li><h3>Shadow mode</h3><p>Your real incidents. No actions.</p><span class="tag">next</span></li>
-        <li><h3>Verified recommendations</h3><p>Measure what can be trusted.</p><span class="tag">later</span></li>
-        <li><h3>Gated actions</h3><p>Automate proven, low-risk cases.</p><span class="tag">later</span></li>
-        <li><h3>Safe autonomy</h3><p>Expand only as evidence builds up.</p><span class="tag">later</span></li>
-      </ol>
-    </div>
-  </section>
-
   <section id="gameday" aria-labelledby="c-h">
     <div class="wrap">
       <h2 id="c-h">Game day: how it works.</h2>
       <p class="lead">Scored on how the agent got there, not just where it ended up.</p>
-      <div class="two">
-        <ol class="steps">
-          <li><div><b>We break a realistic system on purpose.</b> <span>A known failure, so the true cause is known exactly.</span></div></li>
-          <li><div><b>Your agent investigates.</b> <span>It queries recorded telemetry as if the outage were live.</span></div></li>
-          <li><div><b>We record every step.</b> <span>What it looked at, what it concluded, what it recommended.</span></div></li>
-          <li><div><b>TypeRCA scores the investigation.</b> <span>Against the known cause, with rules written before the run.</span></div></li>
-          <li><div><b>Change the agent, run it again.</b> <span>See exactly which incidents got better or worse.</span></div></li>
-        </ol>
-        <div class="card" role="group" aria-label="Example: one investigation, scored">
-          <div class="bar"><span>one investigation, scored</span><span class="label">illustrative</span></div>
-          <div class="claim">Agent: <b>"checkout is the cause. Roll back its last deploy."</b></div>
-          <ul class="score">
-            <li><span class="k">Root cause</span><span class="m ok">✓</span><span class="v">Right service</span></li>
-            <li><span class="k">Evidence</span><span class="m ok">✓</span><span class="v">Cited a check that shows the fault</span></li>
-            <li><span class="k">Alternatives</span><span class="m w">✗</span><span class="v">Network problem dropped without a test</span></li>
-            <li><span class="k">Stopping</span><span class="m w">✗</span><span class="v">Stopped with 2 suspects never checked</span></li>
-            <li><span class="k">Action</span><span class="m w">!</span><span class="v">Rollback unsupported: no deploy near the start</span></li>
-          </ul>
-          <div class="verdict"><span>Right answer, unsafe to act on</span><span class="no">NOT VERIFIED</span></div>
+      <ol class="srow">
+        <li><b>We break a realistic system on purpose.</b> <span>A known failure, so the true cause is known exactly.</span></li>
+        <li><b>Your agent investigates.</b> <span>It queries recorded telemetry as if the outage were live.</span></li>
+        <li><b>We record every step.</b> <span>What it looked at, what it concluded, what it recommended.</span></li>
+        <li><b>TypeRCA scores it.</b> <span>Against the known cause, with rules written before the run.</span></li>
+        <li><b>Change the agent, run it again.</b> <span>See which incidents got better or worse.</span></li>
+      </ol>
+      <div id="origin" class="real">
+        <h3>A real one: our own agent.</h3>
+        <p class="lead">Before testing anyone else's agent, we ran game days on our own. It marks an answer <b>verified</b> only when the evidence supports it and every other cause is ruled out. The failures were new to it, and the rules were written down before each run.</p>
+        <div class="live" id="live" aria-label="Replay of a recorded incident">
+        <div class="live-bar">
+          <span class="live-dot" aria-hidden="true"></span><span id="lv-title">Replay of a recorded incident</span>
+          <span class="live-act"><button type="button" id="lv-replay">Replay</button><button type="button" id="lv-next">Next incident ›</button></span>
         </div>
+        <p class="live-alert" id="lv-alert">Loading…</p>
+        <div class="live-body">
+          <svg class="live-map" id="lv-map" viewBox="0 0 400 300" role="img" aria-label="Service map"></svg>
+          <div class="live-side">
+            <p class="live-step" id="lv-step" aria-live="polite"></p>
+            <div class="live-bars" id="lv-bars"></div>
+            <div class="live-verdict" id="lv-verdict" hidden></div>
+          </div>
+        </div>
+        <div class="live-foot"><span id="lv-meta"></span><a id="lv-play" href="demo/">Play it yourself, step by step →</a></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="big">60</div><p>Staged failures on a microservice shop, from the RCAEval benchmark.</p></div>
+        <div class="fact"><div class="big">58 of 60</div><p>Right service found.</p></div>
+        <div class="fact"><div class="big ok">12 verified</div><p>Passed the strict rule. None of those 12 were wrong.</p></div>
+        <div class="fact"><div class="big">9 of 14</div><p>Right on live failures we injected ourselves. 1 verified, none verified wrong.</p></div>
+      </div>
+        <p class="motto-line"><b>The model judges. Plain code decides.</b> A decision model (today, TypeSafe's Jev) answers narrow questions about the evidence; plain code applies the rules and decides what counts as verified.</p>
+        <a class="more" href="demo/">All 14 live incidents, misses included</a>
       </div>
     </div>
   </section>
@@ -385,64 +362,18 @@ footer a:hover{color:var(--text)}
     </div>
   </section>
 
-  <section id="shadow" aria-labelledby="s-h">
+  <section id="path" aria-labelledby="t-h">
     <div class="wrap">
-      <span class="label">coming next</span>
-      <h2 id="s-h" style="margin-top:16px">Then prove it on your own system.</h2>
-      <p class="lead">Game days show how an agent behaves under controlled conditions. Shadow mode runs TypeRCA read-only next to your existing agent, on your real incidents.</p>
-      <div class="two">
-        <ol class="flow" aria-label="Shadow mode, step by step">
-          <li><span class="who">your AI agent</span><code>"Roll back checkout v142."</code></li>
-          <li><span class="who">TypeRCA, read-only</span>Checks the evidence and the alternatives</li>
-          <li><span class="who">verdict</span><span class="vs"><span class="ok">VERIFIED</span> · UNVERIFIED · <span class="no">CONTRADICTED</span></span></li>
-          <li class="quiet"><span class="who">recorded only</span>Humans keep operating exactly as they do today.</li>
-        </ol>
-        <ul class="points">
-          <li><b>Nothing is blocked or automated.</b> TypeRCA only reads, and writes its verdicts to a log.</li>
-          <li><b>Verdicts are checked against what really happened:</b> your responders' call, or the postmortem.</li>
-          <li><b>After enough incidents</b>, you see which recommendations your agent consistently gets right, and which still need a human.</li>
-          <li><b>Only then</b> does a proven, low-risk action move toward automation, one action type at a time.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="origin" aria-labelledby="o-h">
-    <div class="wrap">
-      <h2 id="o-h">Our first game day: our own agent.</h2>
-      <p class="lead">Before testing anyone else's agent, we ran game days on our own. It marks an answer <b>verified</b> only when the evidence supports it and every other cause is ruled out. The failures were new to it, and the rules were written down before each run.</p>
-      <div class="facts">
-        <div class="fact"><div class="big">60</div><p>Staged failures on a microservice shop, from the RCAEval benchmark.</p></div>
-        <div class="fact"><div class="big">58 of 60</div><p>Right service found.</p></div>
-        <div class="fact"><div class="big ok">12 verified</div><p>Passed the strict rule. None of those 12 were wrong.</p></div>
-        <div class="fact"><div class="big">9 of 14</div><p>Right on live failures we injected ourselves. 1 verified, none verified wrong.</p></div>
-      </div>
-      <div class="live" id="live" aria-label="Replay of a recorded incident">
-        <div class="live-bar">
-          <span class="live-dot" aria-hidden="true"></span><span id="lv-title">Replay of a recorded incident</span>
-          <span class="live-act"><button type="button" id="lv-replay">Replay</button><button type="button" id="lv-next">Next incident ›</button></span>
-        </div>
-        <p class="live-alert" id="lv-alert">Loading…</p>
-        <div class="live-body">
-          <svg class="live-map" id="lv-map" viewBox="0 0 400 300" role="img" aria-label="Service map"></svg>
-          <div class="live-side">
-            <p class="live-step" id="lv-step" aria-live="polite"></p>
-            <div class="live-bars" id="lv-bars"></div>
-            <div class="live-verdict" id="lv-verdict" hidden></div>
-          </div>
-        </div>
-        <div class="live-foot"><span id="lv-meta"></span><a id="lv-play" href="demo/">Play it yourself, step by step →</a></div>
-      </div>
-      <a class="more" href="demo/">All 14 live incidents, misses included</a>
-    </div>
-  </section>
-
-  <section id="scoring" aria-labelledby="h-h">
-    <div class="wrap">
-      <h2 id="h-h">How scoring works.</h2>
-      <p class="lead">Every investigation is broken into narrow questions with fixed answers. Does this evidence support the claim? Was the network ruled out? Does this observation contradict the deploy? A decision model answers each one (today, TypeSafe's Jev). Plain code applies the rules, and every verdict shows exactly which rule it passed or failed.</p>
-      <p class="motto">The model judges.<br>Plain code decides.</p>
-      <p class="limits">Rules are fixed before each run. Results are published per incident, misses included.</p>
+      <h2 id="t-h">Agents shouldn't get production access all at once.</h2>
+      <p class="lead">TypeRCA gives them a path to earn it, one step at a time, on evidence.</p>
+      <ol class="path">
+        <li class="now"><h3>Game day</h3><p>Known failures. Known truth.</p><span class="tag">now · early access</span></li>
+        <li><h3>Shadow mode</h3><p>Your real incidents. No actions.</p><span class="tag">next</span></li>
+        <li><h3>Verified recommendations</h3><p>Measure what can be trusted.</p><span class="tag">later</span></li>
+        <li><h3>Gated actions</h3><p>Automate proven, low-risk cases.</p><span class="tag">later</span></li>
+        <li><h3>Safe autonomy</h3><p>Expand only as evidence builds up.</p><span class="tag">later</span></li>
+      </ol>
+      <p class="shadow-note"><b>Step 2, shadow mode, comes next.</b> TypeRCA runs read-only next to your existing agent on your real incidents and logs a verdict for each recommendation: <span class="ok">VERIFIED</span>, UNVERIFIED or <span class="no">CONTRADICTED</span>. Nothing is blocked or automated. Afterwards the verdicts are checked against what really happened, so you see which recommendations your agent has earned the right to act on.</p>
     </div>
   </section>
 
