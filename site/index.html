@@ -91,6 +91,17 @@ h1{font:500 clamp(44px,7.4vw,80px)/1.02 var(--sans);letter-spacing:-.045em;margi
 .btn.ghost:hover{background:var(--panel-2)}
 .fine{font:400 13.5px var(--mono);color:var(--faint);margin:22px auto 0;text-wrap:balance}
 
+/* hero: real verdicts */
+.tick{max-width:720px;margin:40px auto 0;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);padding:14px 20px;text-align:left}
+.tick-k{display:block;font:400 12px var(--mono);color:var(--faint);margin-bottom:6px}
+.tick-line{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font:400 14.5px var(--mono);min-height:44px;transition:opacity .35s}
+.tick-line.out{opacity:0}
+.tq{color:var(--text)}
+.ta{color:var(--faint)}
+.tv{font-weight:600;letter-spacing:.02em}
+.tv.hm{color:var(--text)}
+.tw{color:var(--dim);font-family:var(--sans)}
+
 /* ---------- sections ---------- */
 section{padding:136px 0 0;scroll-margin-top:12px}
 h2{font:500 clamp(32px,4.4vw,48px)/1.08 var(--sans);letter-spacing:-.04em;margin:0;max-width:22ch;text-wrap:balance}
@@ -192,6 +203,9 @@ td.chg{font:500 12.5px var(--mono);white-space:nowrap}
 .regress{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px 20px;padding:18px 22px;border-top:1px solid var(--line);background:var(--panel-2)}
 .regress b{font:600 15px var(--mono);color:var(--warn);letter-spacing:.02em}
 .regress span{color:var(--dim);font-size:15px;max-width:62ch}
+.rhead{padding:14px 22px;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--dim)}
+.label.ok-l{color:var(--accent);border-color:var(--accent);margin-right:6px}
+h3.minor{font:500 19px var(--sans);letter-spacing:-.02em;margin:40px 0 14px}
 .punch{font:500 clamp(22px,2.6vw,28px)/1.25 var(--sans);letter-spacing:-.03em;margin:28px 0 0;max-width:34ch;text-wrap:balance}
 
 /* origin */
@@ -288,6 +302,7 @@ footer a:hover{color:var(--text)}
   th:first-child,td:first-child{padding-left:14px}
   table{font-size:14px}
   .access{padding:32px 18px}
+  .tick-line{min-height:70px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
@@ -328,6 +343,10 @@ footer a:hover{color:var(--text)}
       <a class="btn ghost" href="#origin">Watch a game day</a>
     </div>
     <p class="fine">No production actions. Not another AI SRE. Bring the agent you already have.</p>
+    <div class="tick" id="tick" aria-label="Real verdicts from our own game days">
+      <span class="tick-k">real verdicts from our own game days</span>
+      <p class="tick-line" id="tick-line"><span class="tq">Agent: "checkout is the cause."</span><span class="ta">→</span><span class="tv ok">VERIFIED</span><span class="tw">every other suspect ruled out</span></p>
+    </div>
   </div>
 
   <section id="problem" aria-labelledby="p-h">
@@ -407,20 +426,34 @@ footer a:hover{color:var(--text)}
       <p class="lead">Every agent change runs against the same incidents. The report shows what got better, and what got worse.</p>
       <div class="report">
         <div class="tbl">
+          <div class="rhead"><span class="label ok-l">real</span> Our agent, version A → B, on the same 60 benchmark incidents. B added two new checks: a timeline and per-service dashboards.</div>
+          <table>
+            <caption class="sr">Real game day report: our agent, version A compared with version B on 60 incidents</caption>
+            <thead><tr><th scope="col">Game day · 60 incidents</th><th scope="col">A</th><th scope="col">B</th><th scope="col">Per incident</th></tr></thead>
+            <tbody>
+              <tr><td>Right service</td><td>57</td><td class="better">58</td><td class="chg">3 better, <span class="no">2 worse</span></td></tr>
+              <tr><td>Answer backed by evidence</td><td>44</td><td class="better">58</td><td class="chg">16 better, <span class="no">2 worse</span></td></tr>
+              <tr><td>Verified</td><td>0</td><td class="better">12</td><td class="chg">12 better</td></tr>
+              <tr><td>Verified but wrong</td><td>0</td><td class="better">0</td><td class="chg">none</td></tr>
+              <tr><td>Checks per investigation</td><td>7.98</td><td class="better">6.80</td><td class="chg">fewer</td></tr>
+            </tbody>
+          </table>
+          <div class="regress"><b>BETTER, WITH 2 REGRESSIONS</b><span>B backs far more answers with evidence and verified 12, none wrong. But the totals hide 2 incidents that A got right and B now gets wrong, one of them a network delay fault. A totals-only score would never show them.</span></div>
+        </div>
+        <h3 class="minor">And when a change goes the wrong way</h3>
+        <div class="tbl">
           <table>
             <caption class="sr">Illustrative game day report comparing agent v12 and v13</caption>
-            <thead><tr><th scope="col">Game day · 50 incidents</th><th scope="col">Agent v12</th><th scope="col">Agent v13</th><th scope="col"><span class="sr">Change</span></th></tr></thead>
+            <thead><tr><th scope="col">Game day · 50 incidents</th><th scope="col">v12</th><th scope="col">v13</th><th scope="col"><span class="sr">Change</span></th></tr></thead>
             <tbody>
               <tr><td>Right root cause</td><td>82%</td><td class="better">86%</td><td class="chg">better</td></tr>
               <tr><td>Claims without supporting evidence</td><td>3%</td><td class="worse">11%</td><td class="chg no">worse</td></tr>
-              <tr><td>Stopped with suspects never checked</td><td>4%</td><td class="worse">13%</td><td class="chg no">worse</td></tr>
               <tr><td>Actions recommended without enough evidence</td><td>2</td><td class="worse">9</td><td class="chg no">worse</td></tr>
-              <tr><td>Median time to answer</td><td>41 s</td><td class="better">38 s</td><td class="chg">better</td></tr>
             </tbody>
           </table>
-          <div class="regress"><b>REGRESSION FOUND</b><span>v13 finds more root causes, but recommended 7 more actions its evidence didn't support. Each incident that got worse replays step by step.</span></div>
+          <div class="regress"><b>REGRESSION FOUND</b><span>v13 finds more root causes, but recommends 7 more actions its evidence doesn't support.</span></div>
         </div>
-        <p class="limits"><span class="label">illustrative</span>&nbsp; A sample report, not a real agent's results. Real reports come with early access.</p>
+        <p class="limits"><span class="label">illustrative</span>&nbsp; The second report is a sample, not a real agent's results.</p>
         <p class="punch">"More accurate" doesn't always mean safer to ship.</p>
       </div>
     </div>
@@ -537,7 +570,7 @@ matchMedia('(min-width: 641px)').addEventListener('change', e => { if (e.matches
     clearTimeout(timer);
     const inc = data.incidents[idx - 1];
     drawMap(data.edges);
-    $('lv-title').textContent = `Replay · incident ${idx} of ${data.incidents.length} · ${inc.round}`;
+    $('lv-title').textContent = `Replay · incident ${idx} of ${data.incidents.length} · ${inc.round}${inc.verified ? ' · the only verified one' : ''}`;
     const a = inc.alert.description || '';
     $('lv-alert').innerHTML = `<b>ALERT</b>${a.replace(/^Alert at [^ ]+ UTC on the /, 'On the ')}`;
     const d = inc.started_at, when = new Date(`${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}T${d.slice(9,11)}:${d.slice(11,13)}:00Z`);
@@ -580,6 +613,26 @@ matchMedia('(min-width: 641px)').addEventListener('change', e => { if (e.matches
     i = (i + 1) % seq.length; t = setTimeout(step, i === 1 ? 600 : 1100);
   };
   new IntersectionObserver(es => { if (es[0].isIntersecting) { if (!t) step(); } else { clearTimeout(t); t = null; i = 0; } }, {threshold: .3}).observe(box);
+})();
+/* hero: cycle real verdicts (incidents 2, 3, 7 and 8 of the live game days) */
+(() => {
+  const line = document.getElementById('tick-line'); if (!line) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const V = [
+    ['checkout is the cause.', 'VERIFIED', 'ok', 'every other suspect ruled out'],
+    ['payment is the cause.', 'RIGHT, NOT VERIFIED', 'hm', "couldn't rule out frontend or another cause"],
+    ['redis is the cause.', 'MISSED', 'no', 'it was currency: 200 ms network delay'],
+    ["I can't name one service.", 'HANDED TO A HUMAN', 'hm', 'it was payment: 200 ms network delay'],
+  ];
+  let i = 0;
+  setInterval(() => {
+    line.classList.add('out');
+    setTimeout(() => {
+      i = (i + 1) % V.length; const [q, v, c, w] = V[i];
+      line.innerHTML = `<span class="tq">Agent: "${q}"</span><span class="ta">→</span><span class="tv ${c}">${v}</span><span class="tw">${w}</span>`;
+      line.classList.remove('out');
+    }, 350);
+  }, 3400);
 })();
 </script>
 </body>
